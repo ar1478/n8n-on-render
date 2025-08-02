@@ -3,3 +3,6 @@ FROM n8nio/n8n
 
 # (Optional) set your timezone
 ENV GENERIC_TIMEZONE="Europe/Paris"
+
+# Expose the port n8n runs on
+EXPOSE 5678
