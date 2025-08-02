@@ -4,6 +4,7 @@ services:
     env: docker
     plan: free
     autoDeploy: true
+    port: 5678
     envVars:
       - key: N8N_HOST
         value: n8n-h0nj.onrender.com
