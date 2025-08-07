@@ -1,8 +1,36 @@
-# Tell Render to pull & run the official n8n Docker image
-FROM n8nio/n8n
+# Use Python 3.11 slim image
+FROM python:3.11-slim
 
-# (Optional) set your timezone
-ENV GENERIC_TIMEZONE="Europe/Paris"
+# Install system dependencies for OpenCV and FFmpeg
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Expose the port n8n runs on
-EXPOSE 5678
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY . .
+
+# Create directory for temporary files
+RUN mkdir -p /tmp/healing_videos
+
+# Expose port
+EXPOSE 5000
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=app.py
+
+# Run the application
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--timeout", "300", "app:app"]
